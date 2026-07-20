@@ -6,7 +6,7 @@ import { FiArrowRight, FiActivity } from "react-icons/fi";
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-[calc(100vh-80px)] flex items-center bg-[#FCF8F5] overflow-hidden px-6 lg:px-16 py-12 lg:py-20">
+    <section className="  relative w-full min-h-[calc(100vh-80px)] flex items-center bg-[#FCF8F5] overflow-hidden px-6 lg:px-16 py-12 lg:py-20">
       
       {/* ১. Background Image (Assets থেকে) */}
       <div className="absolute inset-0 z-0 opacity-90 pointer-events-none">

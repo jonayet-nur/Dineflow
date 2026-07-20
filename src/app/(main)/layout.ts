@@ -1,7 +1,9 @@
 // components/MainLayout.ts
+
 import Footer from '@/Components/Footer';
 import Navbar from '@/Components/Navbar';
 import React from 'react';
+// import { Toaster } from 'react-hot-toast';
 // import { Toaster } from 'react-hot-toast';
 // import Navbar from '@/components/Navbar';
 // import Footer from '@/components/Footer';

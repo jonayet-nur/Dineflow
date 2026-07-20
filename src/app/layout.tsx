@@ -42,6 +42,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import{Josefin_Sans} from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const josefinSans= Josefin_Sans({
   variable:"--font-josefin-sans",
@@ -71,7 +72,22 @@ export default function RootLayout({
       lang="en"
       className={`${josefinSans.variable}  h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-josefin-sans)]">{children}</body>
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-josefin-sans)]">
+        {/* ২. টোস্ট কন্টেইনারটি এখানে বডির শুরুতে বসিয়ে দিন */}
+        <Toaster 
+          position="top-center" 
+          reverseOrder={false}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+          }}
+        />
+        {children}
+
+      </body>
     </html>
   );
 }
