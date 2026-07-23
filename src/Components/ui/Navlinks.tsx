@@ -1,5 +1,6 @@
+import { NavLinkItem } from '@/types/Navbar';
 import Link from 'next/link';
-import { NavLinkItem } from '@/types/Navbar'; // আপনার টাইপ ফাইলের সঠিক পাথ
+
 
 interface NavLinksProps {
   links: NavLinkItem[];
