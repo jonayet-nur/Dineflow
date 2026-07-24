@@ -5,17 +5,19 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
-import { FiShoppingBag, FiBell, FiMenu, FiX, FiGrid, FiInfo, FiBookOpen, FiPhone } from 'react-icons/fi';
+import { FiShoppingBag, FiMenu, FiX, FiGrid, FiInfo, FiBookOpen, FiPhone } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-
 
 // Sub-components
 import { NavLinks } from './ui/Navlinks';
 import { Logo } from './ui/Logo';
-
 import { MobileMenu } from './ui/MobileMenu';
 import { UserDropdown } from './ui/UserDropDown';
 import { NavLinkItem, User, UserRole } from '@/types/Navbar';
+
+// TODO: Connect this with your global Cart State / Context (e.g., Zustand or React Context)
+// Example: const { cartItems } = useCart();
+// const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
 // ============ CONSTANTS ============
 const NAV_LINKS: NavLinkItem[] = [
@@ -35,6 +37,9 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Cart Count state (Replace this mock value with your actual Cart Context / State)
+  const cartItemCount = 0; 
 
   // Auth
   const { data: session, isPending } = authClient.useSession();
@@ -101,28 +106,26 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* Cart Icon - Visible to everyone or logged in users */}
+          <Link href="/cart" className={ICON_BTN_CLASS} aria-label="Shopping Cart">
+            <FiShoppingBag className="w-5 h-5" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-bold text-white shadow-sm transition-transform animate-in zoom-in">
+                {cartItemCount > 99 ? '99+' : cartItemCount}
+              </span>
+            )}
+          </Link>
+
           {isLoggedIn ? (
-            <>
-              {role === 'user' && (
-                <button className={ICON_BTN_CLASS} aria-label="Shopping bag">
-                  <FiShoppingBag className="w-5 h-5" />
-                </button>
-              )}
-              <button className={ICON_BTN_CLASS} aria-label="Notifications">
-                <FiBell className="w-5 h-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-orange-600 border border-white rounded-full" />
-              </button>
-              
-              {/* User Dropdown Component */}
-              <UserDropdown 
-                user={user}
-                role={role}
-                isDropdownOpen={isDropdownOpen}
-                toggleDropdown={toggleDropdown}
-                dropdownRef={dropdownRef}
-                handleLogout={handleLogout}
-              />
-            </>
+            /* User Dropdown Component */
+            <UserDropdown 
+              user={user}
+              role={role}
+              isDropdownOpen={isDropdownOpen}
+              toggleDropdown={toggleDropdown}
+              dropdownRef={dropdownRef}
+              handleLogout={handleLogout}
+            />
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login" className="px-4 py-2 text-sm font-black text-zinc-800 hover:text-orange-600 transition">
@@ -156,6 +159,7 @@ export default function Navbar() {
         isLoggedIn={isLoggedIn}
         user={user}
         role={role}
+        cartItemCount={cartItemCount}
         onClose={() => setIsMobileMenuOpen(false)}
         handleLogout={handleLogout}
       />
