@@ -21,7 +21,7 @@ import { NavLinkItem, User, UserRole } from '@/types/Navbar';
 
 // ============ CONSTANTS ============
 const NAV_LINKS: NavLinkItem[] = [
-  { name: "All Menu", path: "/menu", icon: FiGrid },
+  { name: "All Menu", path: "/all-menu", icon: FiGrid },
   { name: "About", path: "/about", icon: FiInfo },
   { name: "Blog", path: "/blog", icon: FiBookOpen },
   { name: "Contact", path: "/contact", icon: FiPhone },

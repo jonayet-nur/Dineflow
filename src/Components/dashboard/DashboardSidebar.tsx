@@ -31,8 +31,8 @@ const NAV_CONFIG: Record<UserRole, NavItem[]> = {
   admin: [
     { label: "Dashboard", href: "/dashboard/admin", icon: FaChartBar },
     { label: "Manage Users", href: "/dashboard/admin/users", icon: FaUsers },
-    { label: "All Prompts", href: "/dashboard/admin/all-prompt", icon: FaList },
-    { label: "Add Prompt", href: "/dashboard/admin/add-prompt", icon: FaPlus },
+    { label: "All Food Items", href: "/dashboard/admin/all-prompt", icon: FaList },
+    { label: "Add Food", href: "/dashboard/admin/add-prompt", icon: FaPlus },
     { label: "Settings", href: "/dashboard/admin/settings", icon: FaCog },
   ],
 };

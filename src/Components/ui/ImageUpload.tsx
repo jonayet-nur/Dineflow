@@ -1,4 +1,5 @@
 // components/ImageUpload.tsx
+import Image from 'next/image';
 import React from 'react';
 import { FiUploadCloud, FiX, FiLoader } from 'react-icons/fi';
 
@@ -85,6 +86,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   src={preview}
                   alt={`Food preview ${index + 1}`}
                   className="w-full h-32 object-cover"
+                  
                 />
                 <button
                   type="button"
