@@ -5,7 +5,8 @@ import React from 'react';
 export interface FoodItem {
   _id: string;
   name: string;
-  image: string;
+  image?: string;
+  images?: string[];
   price: number;
   category: string;
   dietaryType?: 'veg' | 'non-veg' | 'vegan';
@@ -24,7 +25,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
       {/* 🖼️ ইমেজ এবং ব্যাজ সেকশন */}
       <div className="relative overflow-hidden h-48 w-full bg-gray-100">
         <img
-          src={item.image || 'https://via.placeholder.com/300'}
+          src={item.image || (item.images && item.images.length > 0 ? item.images[0] : 'https://via.placeholder.com/300')}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
