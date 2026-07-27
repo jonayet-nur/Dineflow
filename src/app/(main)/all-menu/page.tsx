@@ -4,7 +4,8 @@
 import FoodCard, { FoodItem } from '@/Components/ui/FoodCard';
 import React, { useEffect, useState, useCallback } from 'react';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+const BASE_URL = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
 
 const AllMenuPage: React.FC = () => {
   const [menuItems, setMenuItems] = useState<FoodItem[]>([]);

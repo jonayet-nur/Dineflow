@@ -556,7 +556,9 @@ export const useFoodForm = () => {
       console.log('📤 Submitting Payload Data:', submitData);
 
       // ৩. ব্যাকএন্ডে API কল
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/all-menu`, {
+      const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+      const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
+      const response = await fetch(`${baseUrl}/api/all-menu`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
