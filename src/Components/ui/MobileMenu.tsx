@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FiLayout, FiSettings, FiLogOut } from 'react-icons/fi';
 import { Avatar } from './Avatar';
 import { NavLinks } from './Navlinks';
-import { NavLinkItem, User, UserRole } from '@/types/Navbar';
+import { NavLinkItem, User, UserRole } from '@/types/navbar';
 
 interface MobileMenuProps {
   isOpen: boolean;

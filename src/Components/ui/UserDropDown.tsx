@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { FiLayout, FiSettings, FiLogOut } from 'react-icons/fi';
 import { Avatar } from './Avatar';
-import { User, UserRole } from '@/types/Navbar';
+import { User, UserRole } from '@/types/navbar';
 
 interface UserDropdownProps {
   user?: User;

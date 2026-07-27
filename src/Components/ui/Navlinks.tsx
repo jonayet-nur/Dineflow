@@ -1,4 +1,4 @@
-import { NavLinkItem } from '@/types/Navbar';
+import { NavLinkItem } from '@/types/navbar';
 import Link from 'next/link';
 
 

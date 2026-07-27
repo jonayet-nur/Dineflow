@@ -104,7 +104,7 @@ const AllMenuPage: React.FC = () => {
         {/* 📌 Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Explore our delicious menu 🍔
+            Explore our delicious menu
           </h1>
           <p className="mt-2 text-sm text-gray-600">
             Choose your favorite dish and order it with just a few clicks!

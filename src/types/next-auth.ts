@@ -17,7 +17,7 @@
 // }
 
 
-import NextAuth from "next-auth";
+
 
 // ১. গ্লোবাল টাইপ ডিফিনিশন
 export type UserRole = 'admin' | 'user';
@@ -35,19 +35,4 @@ export interface DashboardSidebarProps {
   role?: UserRole;
 }
 
-// ২. NextAuth/Better-Auth টাইপ এক্সটেনশন
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      image?: string | null;
-      role: UserRole;
-    };
-  }
-
-  interface User {
-    role: UserRole;
-  }
-}
+// NextAuth has been replaced with better-auth

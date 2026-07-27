@@ -13,7 +13,7 @@ import { NavLinks } from './ui/Navlinks';
 import { Logo } from './ui/Logo';
 import { MobileMenu } from './ui/MobileMenu';
 import { UserDropdown } from './ui/UserDropDown';
-import { NavLinkItem, User, UserRole } from '@/types/Navbar';
+import { NavLinkItem, User, UserRole } from '@/types/navbar';
 
 // TODO: Connect this with your global Cart State / Context (e.g., Zustand or React Context)
 // Example: const { cartItems } = useCart();
@@ -159,7 +159,6 @@ export default function Navbar() {
         isLoggedIn={isLoggedIn}
         user={user}
         role={role}
-        cartItemCount={cartItemCount}
         onClose={() => setIsMobileMenuOpen(false)}
         handleLogout={handleLogout}
       />

@@ -185,11 +185,22 @@ const FeaturedItems = async () => {
                   </div>
                 </div>
 
-                {/* Action Button */}
-                <button className="bg-gray-900 hover:bg-amber-600 text-white px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-amber-500/25 active:scale-95 flex items-center gap-2">
-                  <span>View Details</span>
-                  
-                </button>
+                {/* view details Action Button */}
+              
+<Link href={`/all-menu/${item._id}`}>
+  <button className="bg-gray-900 hover:bg-amber-600 text-white px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-amber-500/25 active:scale-95 flex items-center gap-2">
+    <span>View Details</span>
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="h-4 w-4" 
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+    </svg>
+  </button>
+</Link>
               </div>
             </div>
           );

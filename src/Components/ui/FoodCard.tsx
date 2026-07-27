@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 // 1. Food Item Interface (discountPrice সহ)
@@ -114,13 +115,20 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
               )}
             </div>
           </div>
-
-          <button
+              <Link href={`/all-menu/${item._id}`}>
+   <button
             onClick={() => onAddToCart && onAddToCart(item)}
             className="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-medium text-sm px-4 py-2 rounded-xl transition-all shadow-sm shadow-amber-200"
           >
             View Details
-          </button>
+          </button> 
+</Link>
+          {/* <button
+            onClick={() => onAddToCart && onAddToCart(item)}
+            className="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-medium text-sm px-4 py-2 rounded-xl transition-all shadow-sm shadow-amber-200"
+          >
+            View Details
+          </button> */}
         </div>
       </div>
 

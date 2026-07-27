@@ -1,5 +1,5 @@
 
-import { User } from '@/types/Navbar';
+import { User } from '@/types/navbar';
 import Image from 'next/image';
 import { FiUser } from 'react-icons/fi';
 // ফাইল পাথ স্মল লেটার (navbar) রাখা সেফ

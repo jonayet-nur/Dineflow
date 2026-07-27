@@ -45,7 +45,7 @@ export default function Hero() {
           {/* CTAs (Buttons) */}
           <div className="flex flex-wrap items-center gap-4 pt-4 w-full sm:w-auto">
             <Link 
-              href="/menu" 
+              href="/all-menu" 
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#A03E0B] text-white rounded-full text-sm font-semibold hover:bg-[#8A3308] shadow-lg shadow-orange-950/10 hover:shadow-xl transition-all duration-300 w-full sm:w-auto group"
             >
               Explore Menu 
