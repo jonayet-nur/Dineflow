@@ -552,8 +552,9 @@ const DynamicFoodDetailsPage = () => {
       setLoading(true);
       setError(null);
 
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
-      const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+      const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+      const baseUrlWithProto = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
+      const cleanBaseUrl = baseUrlWithProto.replace(/\/$/, '');
       const res = await fetch(`${cleanBaseUrl}/api/all-menu/${foodId}`);
 
       if (!res.ok) {

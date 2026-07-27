@@ -37,7 +37,9 @@ const FeaturedItems = async () => {
   let error: string | null = null;
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/featured`, {
+    const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+    const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
+    const res = await fetch(`${baseUrl}/api/featured`, {
       cache: 'no-store',
     });
 
