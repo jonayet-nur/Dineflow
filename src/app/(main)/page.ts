@@ -16,6 +16,7 @@
 // app/(main)/page.ts
 import Hero from "@/Components/Banner";
 import BookingAndNews from "@/Components/BookingAndNews";
+import FeaturedItems from "@/Components/Featured";
 
 import React from "react";
 
@@ -26,6 +27,7 @@ export default function Home(): React.ReactElement {
     null,
     
     React.createElement(Hero, null),
+    React.createElement(FeaturedItems, null),
     React.createElement(BookingAndNews, null)
   );
 }
