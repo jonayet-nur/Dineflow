@@ -1,3 +1,5 @@
+
+
 // src/store/useCartStore.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -27,11 +29,10 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       cart: [],
 
-      // 🛒 কার্টে আইটেম যোগ করার লজিক
+      // 🛒 কার্টে আইটেম যোগ করার লজিক (Immutability Fixed)
       addToCart: (newItem) => {
         const currentCart = get().cart;
-        
-        // চেক করা হচ্ছে একই খাবার, একই ভ্যারিয়েন্ট ও এড-অন দিয়ে আগে যোগ করা হয়েছে কিনা
+
         const existingIndex = currentCart.findIndex(
           (item) =>
             item.foodId === newItem.foodId &&
@@ -40,12 +41,18 @@ export const useCartStore = create<CartStore>()(
         );
 
         if (existingIndex > -1) {
-          // যদি একই আইটেম থাকে, তবে Quantity বাড়িয়ে দেওয়া হবে
-          const updatedCart = [...currentCart];
-          updatedCart[existingIndex].quantity += newItem.quantity;
+          // Object Mutation ছাড়াই নতুন অবজেক্ট তৈরি করে আপডেট
+          const updatedCart = currentCart.map((item, index) => {
+            if (index === existingIndex) {
+              return {
+                ...item,
+                quantity: item.quantity + newItem.quantity,
+              };
+            }
+            return item;
+          });
           set({ cart: updatedCart });
         } else {
-          // নতুন আইটেম হলে অ্যারিতে পুশ করা হবে
           set({ cart: [...currentCart, newItem] });
         }
       },
@@ -58,7 +65,7 @@ export const useCartStore = create<CartStore>()(
       // 🧹 কার্ট সম্পূর্ণ খালি করা
       clearCart: () => set({ cart: [] }),
 
-      // 🔢 মোট কতগুলো খাবার কার্টে আছে (Navbar Badge-এর জন্য)
+      // 🔢 মোট কতগুলো খাবার কার্টে আছে
       getTotalItems: () => {
         return get().cart.reduce((total, item) => total + item.quantity, 0);
       },
@@ -69,8 +76,8 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'food-cart-storage', // LocalStorage Key Name
-      storage: createJSONStorage(() => localStorage),
+      name: 'food-cart-storage',
+      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : undefined),
     }
   )
 );
