@@ -77,7 +77,6 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'food-cart-storage',
-      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : undefined),
     }
   )
 );

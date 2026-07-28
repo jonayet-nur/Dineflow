@@ -168,7 +168,6 @@ export default function Navbar() {
         isLoggedIn={isLoggedIn}
         user={user}
         role={role}
-        cartItemCount={cartItemCount}
         onClose={() => setIsMobileMenuOpen(false)}
         handleLogout={handleLogout}
       />
