@@ -1,3 +1,4 @@
+
 // 'use client';
 
 // import React, { useEffect, useState, useCallback } from 'react';
@@ -70,12 +71,13 @@
 //       setLoading(true);
 //       setError(null);
 
-//       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
-//       const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+//       const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+//       const baseUrlWithProto = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
+//       const cleanBaseUrl = baseUrlWithProto.replace(/\/$/, '');
 //       const res = await fetch(`${cleanBaseUrl}/api/all-menu/${foodId}`);
 
 //       if (!res.ok) {
-//         throw new Error(`Error ${res.status}: খাবারটির তথ্য পাওয়া যায়নি!`);
+//         throw new Error(`Error ${res.status}: খাবারটির তথ্য পাওয়া যায়নি!`);
 //       }
 
 //       const result = await res.json();
@@ -88,15 +90,14 @@
 //         if (item.images && item.images.length > 0) {
 //           setSelectedImage(item.images[0]);
 //         }
-//         if (item.variants && item.variants.length > 0) {
-//           setSelectedVariant(item.variants[0]);
-//         }
+//         // নোট: পেজ লোড হওয়ার সময় ডিফল্ট কোনো ভ্যারিয়েন্ট সিলেক্ট না রেখে ফাঁকা রাখা হলো
+//         // যাতে মূল আইটেমের Discount Price প্রথম থেকে সুন্দরভাবে দেখা যায়।
 //       } else {
-//         setError(result.message || 'খাবারের তথ্য লোড করতে সমস্যা হয়েছে!');
+//         setError(result.message || 'খাবারের তথ্য লোড করতে সমস্যা হয়েছে!');
 //       }
 //     } catch (err: any) {
 //       console.error('Fetch Details Error:', err);
-//       setError(err.message || 'সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।');
+//       setError(err.message || 'সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।');
 //     } finally {
 //       setLoading(false);
 //     }
@@ -115,11 +116,11 @@
 //     }
 //   };
 
-//   // 💰 Dynamic Price Calculation
+//   // 💰 Dynamic Price Calculation for Total Cart Price
 //   const calculateTotalPrice = () => {
 //     if (!food) return 0;
 
-//     let base = food.discountPrice || food.price;
+//     let base = (food.discountPrice && food.discountPrice > 0) ? food.discountPrice : food.price;
 
 //     if (selectedVariant && selectedVariant.price !== '0') {
 //       base = parseFloat(selectedVariant.price);
@@ -154,10 +155,10 @@
 //     setUserName('');
 //     setNewComment('');
 //     setNewRating(5);
-//     alert('ধন্যবাদ! আপনার রিভিউটি জমা হয়েছে।');
+//     alert('ধন্যবাদ! আপনার রিভিউটি জমা হয়েছে।');
 //   };
 
-//   // ⏳ 1. SKELETON LOADING STATE
+//   // ⏳ SKELETON LOADING STATE
 //   if (loading) {
 //     return (
 //       <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -177,14 +178,14 @@
 //     );
 //   }
 
-//   // ❌ 2. ERROR STATE
+//   // ❌ ERROR STATE
 //   if (error || !food) {
 //     return (
 //       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
 //         <div className="bg-white p-8 rounded-3xl border border-red-100 text-center max-w-md shadow-md">
 //           <div className="text-4xl mb-3">⚠️</div>
-//           <h2 className="text-xl font-bold text-gray-800 mb-2">সমস্যা দেখা দিয়েছে</h2>
-//           <p className="text-sm text-gray-600 mb-6">{error || 'খাবারটি খুঁজে পাওয়া যায়নি!'}</p>
+//           <h2 className="text-xl font-bold text-gray-800 mb-2">সমস্যা দেখা দিয়েছে</h2>
+//           <p className="text-sm text-gray-600 mb-6">{error || 'খাবারটি খুঁজে পাওয়া যায়নি!'}</p>
 //           <button
 //             onClick={fetchFoodDetails}
 //             className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm"
@@ -196,7 +197,9 @@
 //     );
 //   }
 
-//   // 🟢 3. MAIN DYNAMIC VIEW
+//   const hasDiscount = Boolean(food.discountPrice && food.discountPrice > 0 && food.discountPrice < food.price);
+
+//   // 🟢 MAIN DYNAMIC VIEW
 //   return (
 //     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
 //       <div className="max-w-6xl mx-auto">
@@ -215,6 +218,13 @@
 //               {food.dietaryType && (
 //                 <span className="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full capitalize">
 //                   🟢 {food.dietaryType}
+//                 </span>
+//               )}
+
+//               {/* 🏷️ Discount Badge on Image (যদি ডিসকাউন্ট থাকে) */}
+//               {!selectedVariant && hasDiscount && (
+//                 <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+//                   ছাড় ৳{Math.floor(food.price - food.discountPrice!)}
 //                 </span>
 //               )}
 //             </div>
@@ -261,15 +271,29 @@
 //                 {food.description || food.shortDesc}
 //               </p>
 
-//               {/* Price Tag */}
-//               <div className="mt-4 flex items-baseline gap-3">
-//                 <span className="text-3xl font-black text-gray-900">
-//                   ৳{selectedVariant && selectedVariant.price !== '0' 
-//                       ? selectedVariant.price 
-//                       : (food.discountPrice || food.price)}
-//                 </span>
-//                 {food.discountPrice && (!selectedVariant || selectedVariant.price === '0') && (
-//                   <span className="text-lg text-gray-400 line-through">
+//               {/* 💰 DYNAMIC DISCOUNT PRICE TAG */}
+//               <div className="mt-4 flex items-center gap-3 flex-wrap">
+//                 {selectedVariant && selectedVariant.price !== '0' ? (
+//                   // ১. যদি ইউজার কোনো নির্দিষ্ট Variant সিলেক্ট করে
+//                   <span className="text-3xl font-black text-gray-900">
+//                     ৳{selectedVariant.price}
+//                   </span>
+//                 ) : hasDiscount ? (
+//                   // ২. যদি Variant সিলেক্ট না থাকে এবং Discount Price থাকে
+//                   <>
+//                     <span className="text-3xl font-black text-amber-600">
+//                       ৳{food.discountPrice}
+//                     </span>
+//                     <span className="text-lg text-gray-400 line-through">
+//                       ৳{food.price}
+//                     </span>
+//                     <span className="text-xs bg-red-100 text-red-600 font-bold px-2.5 py-1 rounded-md">
+//                       ছাড় ৳{Math.floor(food.price - food.discountPrice!)}
+//                     </span>
+//                   </>
+//                 ) : (
+//                   // ৩. সাধারণ Price (কোনো ডিসকাউন্ট বা ভ্যারিয়েন্ট সিলেক্ট ছাড়া)
+//                   <span className="text-3xl font-black text-gray-900">
 //                     ৳{food.price}
 //                   </span>
 //                 )}
@@ -280,19 +304,22 @@
 //                 <div className="mt-6">
 //                   <h3 className="text-sm font-bold text-gray-800 mb-2">সাইজ সিলেক্ট করুন:</h3>
 //                   <div className="flex flex-wrap gap-2">
-//                     {food.variants.map((variant, i) => (
-//                       <button
-//                         key={i}
-//                         onClick={() => setSelectedVariant(variant)}
-//                         className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
-//                           selectedVariant?.name === variant.name
-//                             ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-//                             : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-//                         }`}
-//                       >
-//                         {variant.name} {variant.price !== '0' && `(৳${variant.price})`}
-//                       </button>
-//                     ))}
+//                     {food.variants.map((variant, i) => {
+//                       const isSelected = selectedVariant?.name === variant.name;
+//                       return (
+//                         <button
+//                           key={i}
+//                           onClick={() => setSelectedVariant(isSelected ? null : variant)}
+//                           className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
+//                             isSelected
+//                               ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+//                               : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+//                           }`}
+//                         >
+//                           {variant.name} {variant.price !== '0' && `(৳${variant.price})`}
+//                         </button>
+//                       );
+//                     })}
 //                   </div>
 //                 </div>
 //               )}
@@ -383,7 +410,7 @@
             
 //             {/* ✍️ Form */}
 //             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200/60 h-fit">
-//               <h3 className="text-base font-bold text-gray-800 mb-4">আপনার অভিজ্ঞতা শেয়ার করুন</h3>
+//               <h3 className="text-base font-bold text-gray-800 mb-4">আপনার অভিজ্ঞতা শেয়ার করুন</h3>
 //               <form onSubmit={handleReviewSubmit} className="space-y-4">
 //                 <div>
 //                   <label className="block text-xs font-semibold text-gray-600 mb-1">আপনার নাম</label>
@@ -440,7 +467,7 @@
 //             <div className="lg:col-span-2 space-y-4">
 //               {reviews.length === 0 ? (
 //                 <div className="text-center py-12 border border-dashed rounded-2xl">
-//                   <p className="text-gray-400 text-sm">এখনো কোনো রিভিউ দেওয়া হয়নি। প্রথম রিভিউটি আপনিই দিন!</p>
+//                   <p className="text-gray-400 text-sm">এখনো কোনো রিভিউ দেওয়া হয়নি। প্রথম রিভিউটি আপনিই দিন!</p>
 //                 </div>
 //               ) : (
 //                 reviews.map((rev) => (
@@ -477,13 +504,15 @@
 // export default DynamicFoodDetailsPage;
 
 
-
-
-
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useCartStore } from '@/lib/useCartStore';
+
+// 🛒 Import Zustand Cart Store
+// import { useCartStore, CartItem } from '@/store/useCartStore';
 
 // Types Definition
 export interface Variant {
@@ -544,7 +573,10 @@ const DynamicFoodDetailsPage = () => {
   const [newComment, setNewComment] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
 
-  // 🔄 Fetch Single Food Data from Database API
+  // 🛒 Zustand Store Access
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  // 🔄 Fetch Single Food Data
   const fetchFoodDetails = useCallback(async () => {
     if (!foodId) return;
 
@@ -552,9 +584,8 @@ const DynamicFoodDetailsPage = () => {
       setLoading(true);
       setError(null);
 
-      const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
-      const baseUrlWithProto = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
-      const cleanBaseUrl = baseUrlWithProto.replace(/\/$/, '');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+      const cleanBaseUrl = baseUrl.replace(/\/$/, '');
       const res = await fetch(`${cleanBaseUrl}/api/all-menu/${foodId}`);
 
       if (!res.ok) {
@@ -567,12 +598,9 @@ const DynamicFoodDetailsPage = () => {
         const item: FoodDetails = result.data;
         setFood(item);
 
-        // Dynamic State Initializations
         if (item.images && item.images.length > 0) {
           setSelectedImage(item.images[0]);
         }
-        // নোট: পেজ লোড হওয়ার সময় ডিফল্ট কোনো ভ্যারিয়েন্ট সিলেক্ট না রেখে ফাঁকা রাখা হলো
-        // যাতে মূল আইটেমের Discount Price প্রথম থেকে সুন্দরভাবে দেখা যায়।
       } else {
         setError(result.message || 'খাবারের তথ্য লোড করতে সমস্যা হয়েছে!');
       }
@@ -597,10 +625,9 @@ const DynamicFoodDetailsPage = () => {
     }
   };
 
-  // 💰 Dynamic Price Calculation for Total Cart Price
-  const calculateTotalPrice = () => {
+  // 💰 Calculate Unit Price
+  const getUnitPrice = () => {
     if (!food) return 0;
-
     let base = (food.discountPrice && food.discountPrice > 0) ? food.discountPrice : food.price;
 
     if (selectedVariant && selectedVariant.price !== '0') {
@@ -612,7 +639,30 @@ const DynamicFoodDetailsPage = () => {
       0
     );
 
-    return (base + addOnsTotal) * quantity;
+    return base + addOnsTotal;
+  };
+
+  const calculateTotalPrice = () => {
+    return getUnitPrice() * quantity;
+  };
+
+  // 🛒 Add To Cart Handler
+  const handleAddToCart = () => {
+    if (!food) return;
+
+    const cartItem: CartItem = {
+      id: `${food._id}-${selectedVariant?.name || 'default'}-${Date.now()}`,
+      foodId: food._id,
+      name: food.name,
+      image: food.images?.[0] || '',
+      price: getUnitPrice(),
+      quantity: quantity,
+      variant: selectedVariant ? selectedVariant.name : null,
+      addOns: selectedAddOns.length > 0 ? selectedAddOns : [],
+    };
+
+    addToCart(cartItem);
+    toast.success(`${food.name} সফলভাবে কার্টে যোগ করা হয়েছে! 🛒`);
   };
 
   // 📝 Submit Review Handler
@@ -636,10 +686,9 @@ const DynamicFoodDetailsPage = () => {
     setUserName('');
     setNewComment('');
     setNewRating(5);
-    alert('ধন্যবাদ! আপনার রিভিউটি জমা হয়েছে।');
+    toast.success('ধন্যবাদ! আপনার রিভিউটি জমা হয়েছে।');
   };
 
-  // ⏳ SKELETON LOADING STATE
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -659,7 +708,6 @@ const DynamicFoodDetailsPage = () => {
     );
   }
 
-  // ❌ ERROR STATE
   if (error || !food) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -680,7 +728,6 @@ const DynamicFoodDetailsPage = () => {
 
   const hasDiscount = Boolean(food.discountPrice && food.discountPrice > 0 && food.discountPrice < food.price);
 
-  // 🟢 MAIN DYNAMIC VIEW
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -702,7 +749,6 @@ const DynamicFoodDetailsPage = () => {
                 </span>
               )}
 
-              {/* 🏷️ Discount Badge on Image (যদি ডিসকাউন্ট থাকে) */}
               {!selectedVariant && hasDiscount && (
                 <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                   ছাড় ৳{Math.floor(food.price - food.discountPrice!)}
@@ -710,7 +756,6 @@ const DynamicFoodDetailsPage = () => {
               )}
             </div>
 
-            {/* Thumbnails */}
             {food.images && food.images.length > 1 && (
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {food.images.map((img, idx) => (
@@ -752,15 +797,13 @@ const DynamicFoodDetailsPage = () => {
                 {food.description || food.shortDesc}
               </p>
 
-              {/* 💰 DYNAMIC DISCOUNT PRICE TAG */}
+              {/* 💰 Price Display */}
               <div className="mt-4 flex items-center gap-3 flex-wrap">
                 {selectedVariant && selectedVariant.price !== '0' ? (
-                  // ১. যদি ইউজার কোনো নির্দিষ্ট Variant সিলেক্ট করে
                   <span className="text-3xl font-black text-gray-900">
                     ৳{selectedVariant.price}
                   </span>
                 ) : hasDiscount ? (
-                  // ২. যদি Variant সিলেক্ট না থাকে এবং Discount Price থাকে
                   <>
                     <span className="text-3xl font-black text-amber-600">
                       ৳{food.discountPrice}
@@ -773,14 +816,13 @@ const DynamicFoodDetailsPage = () => {
                     </span>
                   </>
                 ) : (
-                  // ৩. সাধারণ Price (কোনো ডিসকাউন্ট বা ভ্যারিয়েন্ট সিলেক্ট ছাড়া)
                   <span className="text-3xl font-black text-gray-900">
                     ৳{food.price}
                   </span>
                 )}
               </div>
 
-              {/* 🍕 Variants Selection */}
+              {/* Variants */}
               {food.variants && food.variants.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-sm font-bold text-gray-800 mb-2">সাইজ সিলেক্ট করুন:</h3>
@@ -791,7 +833,7 @@ const DynamicFoodDetailsPage = () => {
                         <button
                           key={i}
                           onClick={() => setSelectedVariant(isSelected ? null : variant)}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                          className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                             isSelected
                               ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
                               : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
@@ -805,7 +847,7 @@ const DynamicFoodDetailsPage = () => {
                 </div>
               )}
 
-              {/* 🧀 Add-ons Selection */}
+              {/* Add-ons */}
               {food.addOns && food.addOns.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-sm font-bold text-gray-800 mb-2">এড-অন যোগ করুন:</h3>
@@ -827,7 +869,7 @@ const DynamicFoodDetailsPage = () => {
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => {}}
-                              className="accent-amber-500 rounded"
+                              className="accent-amber-500 rounded cursor-pointer"
                             />
                             <span>{addOn.name}</span>
                           </div>
@@ -840,14 +882,14 @@ const DynamicFoodDetailsPage = () => {
               )}
             </div>
 
-            {/* 🛒 Quantity & Add To Cart */}
+            {/* 🛒 Quantity & Add To Cart Button */}
             <div className="mt-8 pt-6 border-t border-gray-100">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-bold text-gray-700">পরিমাণ:</span>
                 <div className="flex items-center bg-gray-100 rounded-xl p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-8 h-8 rounded-lg bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-200 transition"
+                    className="w-8 h-8 rounded-lg bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-200 transition cursor-pointer"
                   >
                     -
                   </button>
@@ -856,16 +898,18 @@ const DynamicFoodDetailsPage = () => {
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-8 h-8 rounded-lg bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-200 transition"
+                    className="w-8 h-8 rounded-lg bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-200 transition cursor-pointer"
                   >
                     +
                   </button>
                 </div>
               </div>
 
+              {/* 🛒 Order Now Button */}
               <button 
+                onClick={handleAddToCart}
                 disabled={!food.isAvailable}
-                className={`w-full font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                className={`w-full font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   food.isAvailable
                     ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200 active:scale-98'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -881,15 +925,13 @@ const DynamicFoodDetailsPage = () => {
           </div>
         </div>
 
-        {/* ================= ⭐ REVIEWS & RATING SECTION ================= */}
+        {/* Reviews Section */}
         <div className="mt-12 bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             ⭐ গ্রাহকদের রিভিউ ({reviews.length})
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            
-            {/* ✍️ Form */}
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200/60 h-fit">
               <h3 className="text-base font-bold text-gray-800 mb-4">আপনার অভিজ্ঞতা শেয়ার করুন</h3>
               <form onSubmit={handleReviewSubmit} className="space-y-4">
@@ -913,7 +955,7 @@ const DynamicFoodDetailsPage = () => {
                         type="button"
                         key={star}
                         onClick={() => setNewRating(star)}
-                        className={`text-2xl transition ${
+                        className={`text-2xl transition cursor-pointer ${
                           star <= newRating ? 'text-amber-400' : 'text-gray-300'
                         }`}
                       >
@@ -937,14 +979,13 @@ const DynamicFoodDetailsPage = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gray-900 hover:bg-black text-white font-medium py-2.5 rounded-xl text-sm transition"
+                  className="w-full bg-gray-900 hover:bg-black text-white font-medium py-2.5 rounded-xl text-sm transition cursor-pointer"
                 >
                   রিভিউ জমা দিন
                 </button>
               </form>
             </div>
 
-            {/* 💬 List */}
             <div className="lg:col-span-2 space-y-4">
               {reviews.length === 0 ? (
                 <div className="text-center py-12 border border-dashed rounded-2xl">
@@ -973,7 +1014,6 @@ const DynamicFoodDetailsPage = () => {
                 ))
               )}
             </div>
-
           </div>
         </div>
 
