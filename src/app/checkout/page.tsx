@@ -5,7 +5,7 @@
 // import { useCartStore } from '@/lib/useCartStore';
 // import { useRouter } from 'next/navigation';
 // import Link from 'next/link';
-// import { FiArrowLeft, FiShoppingBag, FiTruck, FiFileText } from 'react-icons/fi';
+// import { FiArrowLeft, FiShoppingBag, FiTruck, FiFileText, FiCheckCircle } from 'react-icons/fi';
 // import toast from 'react-hot-toast';
 
 // export default function CheckoutPage() {
@@ -22,7 +22,7 @@
 //     notes: '',
 //   });
 
-//   // Hydration Fix for Next.js Client Component
+//   // Hydration fix for Next.js Client Component
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
@@ -31,11 +31,16 @@
 //   const deliveryFee = cart.length > 0 ? 60 : 0;
 //   const totalAmount = subTotal + deliveryFee;
 
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
 //   const handleSubmitOrder = async (e: React.FormEvent) => {
 //     e.preventDefault();
 
 //     if (cart.length === 0) {
-//       toast.error('আপনার কার্ট খালি!');
+//       toast.error('Your cart is empty!');
 //       return;
 //     }
 
@@ -46,13 +51,14 @@
 //       phone: formData.phone.trim(),
 //       address: formData.address.trim(),
 //       notes: formData.notes.trim(),
-//       items: cart.map((item) => ({
-//         foodId: item.foodId,
-//         name: item.name,
-//         price: item.price,
-//         quantity: item.quantity,
-//         variant: item.variant || null,
-//         addOns: item.addOns || [],
+//       paymentMethod: 'Cash on Delivery',
+//       items: cart.map(({ foodId, name, price, quantity, variant, addOns }) => ({
+//         foodId,
+//         name,
+//         price,
+//         quantity,
+//         variant: variant || null,
+//         addOns: addOns || [],
 //       })),
 //       subTotal,
 //       deliveryFee,
@@ -62,11 +68,10 @@
 //     };
 
 //     try {
-//       // API Base URL Detection
-//       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-//       const cleanUrl = `${baseUrl.replace(/\/$/, '')}/api/orders`;
+//       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+//       const endpoint = `${baseUrl.replace(/\/$/, '')}/api/orders`;
 
-//       const res = await fetch(cleanUrl, {
+//       const res = await fetch(endpoint, {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify(orderPayload),
@@ -75,25 +80,21 @@
 //       const responseData = await res.json().catch(() => null);
 
 //       if (res.ok) {
-//         toast.success('🎉 আপনার অর্ডারটি সফলভাবে কনফার্ম হয়েছে!');
-        
-//         // 🧹 Clear Store & LocalStorage Cart
-//         clearCart(); 
-
-//         // 🚀 Redirect to Order Success Page
+//         toast.success('🎉 Order placed successfully!');
+//         clearCart();
 //         router.push('/order-success');
 //       } else {
-//         toast.error(responseData?.message || 'অর্ডার করতে সমস্যা হয়েছে, আবার চেষ্টা করুন!');
+//         toast.error(responseData?.message || 'Failed to place order. Please try again!');
 //       }
 //     } catch (error) {
 //       console.error('Order Submit Error:', error);
-//       toast.error('সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি!');
+//       toast.error('Unable to connect to the server. Please check your connection.');
 //     } finally {
 //       setLoading(false);
 //     }
 //   };
 
-//   // 🛒 কার্ট খালি থাকলে রিটার্ন ভিউ
+//   // Empty Cart State
 //   if (mounted && cart.length === 0) {
 //     return (
 //       <div className="min-h-screen pt-28 pb-12 px-4 flex flex-col items-center justify-center bg-gray-50">
@@ -101,15 +102,15 @@
 //           <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
 //             <FiShoppingBag size={32} />
 //           </div>
-//           <h2 className="text-xl font-bold text-gray-800 mb-2">কার্টে কোনো খাবার নেই!</h2>
+//           <h2 className="text-xl font-bold text-gray-800 mb-2">Your Cart is Empty!</h2>
 //           <p className="text-gray-500 text-sm mb-6">
-//             অর্ডার কনফার্ম করার আগে দয়া করে মেনু থেকে খাবার সিলেক্ট করুন।
+//             Please select items from the menu before proceeding to checkout.
 //           </p>
 //           <Link
 //             href="/all-menu"
 //             className="inline-flex items-center justify-center gap-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-xl transition"
 //           >
-//             মেনু দেখুন
+//             Explore Menu
 //           </Link>
 //         </div>
 //       </div>
@@ -120,78 +121,108 @@
 //     <div className="min-h-screen pt-24 pb-16 bg-gray-50 px-4 sm:px-6 lg:px-8">
 //       <div className="max-w-4xl mx-auto">
         
-//         {/* Top Navigation */}
+//         {/* Top Header */}
 //         <div className="flex items-center gap-3 mb-6">
-//           <Link href="/cart" className="p-2 bg-white rounded-xl shadow-xs text-gray-600 hover:text-orange-600 transition">
+//           <Link 
+//             href="/cart" 
+//             className="p-2 bg-white rounded-xl shadow-xs text-gray-600 hover:text-orange-600 transition"
+//             aria-label="Back to Cart"
+//           >
 //             <FiArrowLeft size={20} />
 //           </Link>
-//           <h1 className="text-2xl font-black text-gray-900">চেকআউট (Checkout)</h1>
+//           <h1 className="text-2xl font-black text-gray-900">Checkout</h1>
 //         </div>
 
 //         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-//           {/* 📝 Shipping Info Form (Left Side) */}
-//           <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl shadow-xs border border-gray-100">
-//             <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
-//               <FiTruck className="text-orange-600" /> ডেলিভারির বিবরণ
+//           {/* Shipping Form */}
+//           <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl shadow-xs border border-gray-100 space-y-6">
+//             <h2 className="text-lg font-bold text-gray-900 border-b pb-3 flex items-center gap-2">
+//               <FiTruck className="text-orange-600" /> Delivery Details
 //             </h2>
 
 //             <form onSubmit={handleSubmitOrder} className="space-y-4">
 //               <div>
-//                 <label className="block text-xs font-bold text-gray-700 mb-1">
-//                   আপনার নাম <span className="text-red-500">*</span>
+//                 <label htmlFor="name" className="block text-xs font-bold text-gray-700 mb-1">
+//                   Full Name <span className="text-red-500">*</span>
 //                 </label>
 //                 <input
+//                   id="name"
+//                   name="name"
 //                   type="text"
 //                   required
 //                   value={formData.name}
-//                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-//                   placeholder="যেমন: সাকিব হাসান"
+//                   onChange={handleInputChange}
+//                   placeholder="e.g., John Doe"
 //                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
 //                 />
 //               </div>
 
 //               <div>
-//                 <label className="block text-xs font-bold text-gray-700 mb-1">
-//                   মোবাইল নম্বর <span className="text-red-500">*</span>
+//                 <label htmlFor="phone" className="block text-xs font-bold text-gray-700 mb-1">
+//                   Phone Number <span className="text-red-500">*</span>
 //                 </label>
 //                 <input
+//                   id="phone"
+//                   name="phone"
 //                   type="tel"
 //                   required
 //                   value={formData.phone}
-//                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+//                   onChange={handleInputChange}
 //                   placeholder="017XXXXXXXX"
 //                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
 //                 />
 //               </div>
 
 //               <div>
-//                 <label className="block text-xs font-bold text-gray-700 mb-1">
-//                   সম্পূর্ণ ঠিকানা <span className="text-red-500">*</span>
+//                 <label htmlFor="address" className="block text-xs font-bold text-gray-700 mb-1">
+//                   Delivery Address <span className="text-red-500">*</span>
 //                 </label>
 //                 <textarea
+//                   id="address"
+//                   name="address"
 //                   required
 //                   rows={3}
 //                   value={formData.address}
-//                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-//                   placeholder="বাসা/রোড নম্বর, এলাকা, থানা..."
+//                   onChange={handleInputChange}
+//                   placeholder="House/Road no., Area, City..."
 //                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
 //                 />
 //               </div>
 
-//               <div>
-//                 <label className="block text-xs font-bold text-gray-700 mb-1">
-//                   বিশেষ বার্তা (Special Notes)
+//               {/* <div>
+//                 <label htmlFor="notes" className="block text-xs font-bold text-gray-700 mb-1">
+//                   Order Notes <span className="text-gray-400 font-normal">(Optional)</span>
 //                 </label>
 //                 <input
+//                   id="notes"
+//                   name="notes"
 //                   type="text"
 //                   value={formData.notes}
-//                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-//                   placeholder="যেমন: ঝাল কম দিয়েন, কল দিয়ে আসবেন..."
+//                   onChange={handleInputChange}
+//                   placeholder="e.g., Less spicy, call before delivery..."
 //                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
 //                 />
+//               </div> */}
+
+//               {/* Payment Method Notice */}
+//               <div className="pt-2">
+//                 <label className="block text-xs font-bold text-gray-700 mb-2">
+//                   Payment Method
+//                 </label>
+//                 <div className="p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50/50 flex items-center justify-between text-emerald-900">
+//                   <div className="flex items-center gap-3">
+//                     <span className="text-2xl">💵</span>
+//                     <div>
+//                       <p className="font-bold text-sm">Cash on Delivery</p>
+//                       <p className="text-xs text-emerald-700">Pay cash upon receiving your order</p>
+//                     </div>
+//                   </div>
+//                   <FiCheckCircle className="text-emerald-600 text-xl shrink-0" />
+//                 </div>
 //               </div>
 
+//               {/* Submit Button */}
 //               <div className="pt-4 border-t border-gray-100">
 //                 <button
 //                   type="submit"
@@ -200,27 +231,23 @@
 //                 >
 //                   {loading ? (
 //                     <span className="flex items-center gap-2">
-//                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-//                       অর্ডার প্রসেস হচ্ছে...
+//                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+//                       Processing Order...
 //                     </span>
 //                   ) : (
-//                     `অর্ডার নিশ্চিত করুন • ৳${totalAmount}`
+//                     `Confirm Order • ৳${totalAmount}`
 //                   )}
 //                 </button>
-//                 <p className="text-center text-xs text-gray-400 mt-3">
-//                   💵 ক্যাশ অন ডেলিভারি (খাবার পেয়ে পেমেন্ট করুন)
-//                 </p>
 //               </div>
 //             </form>
 //           </div>
 
-//           {/* 🧾 Order Summary (Right Side) */}
+//           {/* Order Summary */}
 //           <div className="lg:col-span-5 bg-white p-6 rounded-3xl shadow-xs border border-gray-100 h-fit space-y-4">
 //             <h2 className="text-lg font-bold text-gray-900 border-b pb-3 flex items-center gap-2">
-//               <FiFileText className="text-orange-600" /> অর্ডারের সামারি ({cart.length})
+//               <FiFileText className="text-orange-600" /> Order Summary ({cart.length})
 //             </h2>
 
-//             {/* Item List */}
 //             <div className="max-h-60 overflow-y-auto space-y-3 pr-1">
 //               {cart.map((item) => (
 //                 <div key={item.id} className="flex justify-between items-center text-sm border-b pb-2">
@@ -235,18 +262,17 @@
 //               ))}
 //             </div>
 
-//             {/* Calculations */}
 //             <div className="space-y-2 text-sm text-gray-600 pt-2 border-t">
 //               <div className="flex justify-between">
-//                 <span>খাবারের সাবটোটাল</span>
+//                 <span>Subtotal</span>
 //                 <span className="font-bold text-gray-800">৳{subTotal}</span>
 //               </div>
 //               <div className="flex justify-between">
-//                 <span>ডেলিভারি চার্জ</span>
+//                 <span>Delivery Fee</span>
 //                 <span className="font-bold text-gray-800">৳{deliveryFee}</span>
 //               </div>
 //               <div className="border-t pt-2 mt-2 flex justify-between text-base font-black text-gray-900">
-//                 <span>সর্বমোট বিল</span>
+//                 <span>Total Amount</span>
 //                 <span className="text-orange-600 text-lg">৳{totalAmount}</span>
 //               </div>
 //             </div>
@@ -257,6 +283,8 @@
 //     </div>
 //   );
 // }
+
+
 
 
 'use client';
@@ -282,7 +310,6 @@ export default function CheckoutPage() {
     notes: '',
   });
 
-  // Hydration Fix for Next.js Client Component
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -291,11 +318,16 @@ export default function CheckoutPage() {
   const deliveryFee = cart.length > 0 ? 60 : 0;
   const totalAmount = subTotal + deliveryFee;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (cart.length === 0) {
-      toast.error('আপনার কার্ট খালি!');
+      toast.error('Your cart is empty!');
       return;
     }
 
@@ -307,13 +339,13 @@ export default function CheckoutPage() {
       address: formData.address.trim(),
       notes: formData.notes.trim(),
       paymentMethod: 'Cash on Delivery',
-      items: cart.map((item) => ({
-        foodId: item.foodId,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        variant: item.variant || null,
-        addOns: item.addOns || [],
+      items: cart.map(({ foodId, name, price, quantity, variant, addOns }) => ({
+        foodId,
+        name,
+        price,
+        quantity,
+        variant: variant || null,
+        addOns: addOns || [],
       })),
       subTotal,
       deliveryFee,
@@ -323,11 +355,10 @@ export default function CheckoutPage() {
     };
 
     try {
-      // API Base URL Detection
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
-      const cleanUrl = `${baseUrl.replace(/\/$/, '')}/api/orders`;
+      const endpoint = `${baseUrl.replace(/\/$/, '')}/api/orders`;
 
-      const res = await fetch(cleanUrl, {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload),
@@ -336,25 +367,38 @@ export default function CheckoutPage() {
       const responseData = await res.json().catch(() => null);
 
       if (res.ok) {
-        toast.success('🎉 আপনার অর্ডারটি সফলভাবে কনফার্ম হয়েছে!');
-        
-        // 🧹 Clear Store & LocalStorage Cart
-        clearCart(); 
+        // 🔑 আসল অর্ডারের সকল তথ্য sessionStorage-এ সেভ করা হচ্ছে
+        const completedOrderData = {
+          orderId: responseData?.data?._id || responseData?.orderId || `#ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+          items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            variant: item.variant || null,
+          })),
+          subTotal,
+          deliveryFee,
+          totalAmount,
+          address: formData.address.trim(),
+          createdAt: new Date().toISOString(),
+        };
 
-        // 🚀 Redirect to Order Success Page
+        sessionStorage.setItem('latestOrder', JSON.stringify(completedOrderData));
+
+        toast.success('🎉 Order placed successfully!');
+        clearCart(); // কার্ট ক্লিয়ার করার আগে sessionStorage-এ ডাটা রাখা হয়েছে
         router.push('/order-success');
       } else {
-        toast.error(responseData?.message || 'অর্ডার করতে সমস্যা হয়েছে, আবার চেষ্টা করুন!');
+        toast.error(responseData?.message || 'Failed to place order. Please try again!');
       }
     } catch (error) {
       console.error('Order Submit Error:', error);
-      toast.error('সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি!');
+      toast.error('Unable to connect to the server. Please check your connection.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 🛒 কার্ট খালি থাকলে রিটার্ন ভিউ
   if (mounted && cart.length === 0) {
     return (
       <div className="min-h-screen pt-28 pb-12 px-4 flex flex-col items-center justify-center bg-gray-50">
@@ -362,15 +406,15 @@ export default function CheckoutPage() {
           <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <FiShoppingBag size={32} />
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">কার্টে কোনো খাবার নেই!</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Your Cart is Empty!</h2>
           <p className="text-gray-500 text-sm mb-6">
-            অর্ডার কনফার্ম করার আগে দয়া করে মেনু থেকে খাবার সিলেক্ট করুন।
+            Please select items from the menu before proceeding to checkout.
           </p>
           <Link
             href="/all-menu"
             className="inline-flex items-center justify-center gap-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-xl transition"
           >
-            মেনু দেখুন
+            Explore Menu
           </Link>
         </div>
       </div>
@@ -380,47 +424,48 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen pt-24 pb-16 bg-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        
-        {/* Top Navigation */}
         <div className="flex items-center gap-3 mb-6">
-          <Link href="/cart" className="p-2 bg-white rounded-xl shadow-xs text-gray-600 hover:text-orange-600 transition">
+          <Link 
+            href="/cart" 
+            className="p-2 bg-white rounded-xl shadow-xs text-gray-600 hover:text-orange-600 transition"
+          >
             <FiArrowLeft size={20} />
           </Link>
-          <h1 className="text-2xl font-black text-gray-900">চেকআউট (Checkout)</h1>
+          <h1 className="text-2xl font-black text-gray-900">Checkout</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* 📝 Shipping Info Form (Left Side) */}
           <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl shadow-xs border border-gray-100 space-y-6">
             <h2 className="text-lg font-bold text-gray-900 border-b pb-3 flex items-center gap-2">
-              <FiTruck className="text-orange-600" /> ডেলিভারির বিবরণ
+              <FiTruck className="text-orange-600" /> Delivery Details
             </h2>
 
             <form onSubmit={handleSubmitOrder} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  আপনার নাম <span className="text-red-500">*</span>
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="name"
                   type="text"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="যেমন: সাকিব হাসান"
+                  onChange={handleInputChange}
+                  placeholder="e.g., John Doe"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  মোবাইল নম্বর <span className="text-red-500">*</span>
+                  Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="phone"
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={handleInputChange}
                   placeholder="017XXXXXXXX"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
                 />
@@ -428,42 +473,41 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  সম্পূর্ণ ঠিকানা <span className="text-red-500">*</span>
+                  Delivery Address <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  name="address"
                   required
                   rows={3}
                   value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="বাসা/রোড নম্বর, এলাকা, থানা..."
+                  onChange={handleInputChange}
+                  placeholder="House/Road no., Area, City..."
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  বিশেষ বার্তা (Special Notes)
+                  Order Notes <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
                 <input
+                  name="notes"
                   type="text"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="যেমন: ঝাল কম দিয়েন, কল দিয়ে আসবেন..."
+                  onChange={handleInputChange}
+                  placeholder="e.g., Less spicy, call before delivery..."
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
                 />
-              </div>
+              </div> */}
 
-              {/* 💵 Payment Method Display (Fixed as Cash on Delivery) */}
               <div className="pt-2">
-                <label className="block text-xs font-bold text-gray-700 mb-2">
-                  পেমেন্ট পদ্ধতি
-                </label>
+                <label className="block text-xs font-bold text-gray-700 mb-2">Payment Method</label>
                 <div className="p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50/50 flex items-center justify-between text-emerald-900">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">💵</span>
                     <div>
-                      <p className="font-bold text-sm">Cash on Delivery (ক্যাশ অন ডেলিভারি)</p>
-                      <p className="text-xs text-emerald-700">খাবার হাতে পাওয়ার পর মূল্য পরিশোধ করুন</p>
+                      <p className="font-bold text-sm">Cash on Delivery</p>
+                      <p className="text-xs text-emerald-700">Pay cash upon receiving your order</p>
                     </div>
                   </div>
                   <FiCheckCircle className="text-emerald-600 text-xl shrink-0" />
@@ -474,28 +518,19 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 transition active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg transition active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      অর্ডার প্রসেস হচ্ছে...
-                    </span>
-                  ) : (
-                    `অর্ডার নিশ্চিত করুন • ৳${totalAmount}`
-                  )}
+                  {loading ? 'Processing Order...' : `Confirm Order • ৳${totalAmount}`}
                 </button>
               </div>
             </form>
           </div>
 
-          {/* 🧾 Order Summary (Right Side) */}
           <div className="lg:col-span-5 bg-white p-6 rounded-3xl shadow-xs border border-gray-100 h-fit space-y-4">
             <h2 className="text-lg font-bold text-gray-900 border-b pb-3 flex items-center gap-2">
-              <FiFileText className="text-orange-600" /> অর্ডারের সামারি ({cart.length})
+              <FiFileText className="text-orange-600" /> Order Summary ({cart.length})
             </h2>
 
-            {/* Item List */}
             <div className="max-h-60 overflow-y-auto space-y-3 pr-1">
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm border-b pb-2">
@@ -510,23 +545,21 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            {/* Calculations */}
             <div className="space-y-2 text-sm text-gray-600 pt-2 border-t">
               <div className="flex justify-between">
-                <span>খাবারের সাবটোটাল</span>
+                <span>Subtotal</span>
                 <span className="font-bold text-gray-800">৳{subTotal}</span>
               </div>
               <div className="flex justify-between">
-                <span>ডেলিভারি চার্জ</span>
+                <span>Delivery Fee</span>
                 <span className="font-bold text-gray-800">৳{deliveryFee}</span>
               </div>
               <div className="border-t pt-2 mt-2 flex justify-between text-base font-black text-gray-900">
-                <span>সর্বমোট বিল</span>
+                <span>Total Amount</span>
                 <span className="text-orange-600 text-lg">৳{totalAmount}</span>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
