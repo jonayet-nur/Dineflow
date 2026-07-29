@@ -56,7 +56,7 @@ export const MobileMenu = ({
             
             <div className="grid grid-cols-2 gap-2">
               <Link 
-                href={role === 'admin' ? '/admin/dashboard' : '/dashboard'} 
+                href={role === 'admin' ? '/dashboard' : '/dashboard'} 
                 onClick={onClose}
                 className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-900/10 text-zinc-800 text-xs font-bold hover:bg-zinc-900/5 transition"
               >

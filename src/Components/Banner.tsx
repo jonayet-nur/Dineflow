@@ -21,13 +21,13 @@ export default function Hero() {
       </div>
 
       {/* Hero Content Container */}
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 items-center relative z-10">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 pt-10 lg:grid-cols-12 gap-16 lg:gap-12 items-center relative z-10">
         
         {/* Left Side: Content (7 Columns on Large Screen) */}
         <div className="lg:col-span-7 flex flex-col items-start space-y-8 max-w-2xl relative z-20">
           
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border border-orange-100 shadow-sm animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite]">
+          <div className="inline-flex items-center gap-2 px-4  py-2 rounded-full bg-orange-50 border border-orange-100 shadow-sm animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite]">
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
