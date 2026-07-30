@@ -34,14 +34,22 @@ const DashboardNavbar = ({
             <span className="text-xl">☰</span>
           </button>
           {/* Search Bar - Desktop only */}
-          <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+          {/* <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
             <FaSearch className="text-gray-400" />
             <input
               type="text"
               placeholder="Search..."
               className="bg-transparent outline-none ml-2 text-gray-700 w-64 text-sm"
             />
-          </div>
+          </div> */}
+      <div className="hidden md:flex flex-col text-right">
+  <span className="text-xs font-bold text-gray-800">
+    Welcome back, {user?.role === 'admin' ? 'Admin' : 'User'} 👋
+  </span>
+  <span className="text-[10px] font-medium text-gray-400">
+    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+  </span>
+</div>
         </div>
 
         {/* Right Section */}
