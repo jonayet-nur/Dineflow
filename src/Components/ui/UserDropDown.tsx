@@ -58,7 +58,7 @@ export const UserDropdown = ({
           </div>
 
           <Link 
-            href={role === 'admin' ? '/dashboard' : '/dashboard'} 
+            href={role === 'admin' ? '/dashboard/admin' : '/dashboard/user'} 
             className={DROPDOWN_ITEM_CLASS}
             onClick={toggleDropdown}
           >
