@@ -19,7 +19,7 @@ export const Logo = () => {
           />
         </svg>
       </div>
-      <span className="tracking-tight font-black text-zinc-900">
+      <span className="tracking-tight font-black text-orange-600">
         Dine<span className="text-orange-600">flow</span>
       </span>
     </Link>
