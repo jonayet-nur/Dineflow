@@ -9,10 +9,10 @@ const nextConfig: NextConfig = {
         port: '5000',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com', // বা আপনার ব্যবহৃত অন্য কোনো ইমেজ হোস্টিং
-      },
+      // {
+      //   protocol: 'https',
+      //   hostname: 'res.cloudinary.com', // বা আপনার ব্যবহৃত অন্য কোনো ইমেজ হোস্টিং
+      // },
       {
         protocol: 'https',
         hostname: 'i.ibb.co',

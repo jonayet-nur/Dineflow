@@ -18,7 +18,7 @@ export const Avatar = ({ user }: AvatarProps) => {
   return (
     <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-sm border border-orange-600/30 select-none">
       {user.image ? (
-        <Image 
+        <img 
           src={user.image} 
           alt={user.name || "User profile"} 
           width={32} 

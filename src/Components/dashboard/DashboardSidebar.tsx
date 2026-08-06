@@ -24,8 +24,8 @@ import { Logo } from '../ui/Logo';
 const NAV_CONFIG: Record<UserRole, NavItem[]> = {
   user: [
     { label: "Dashboard", href: "/dashboard/user", icon: FaHome },
-    { label: "My Prompts", href: "/dashboard/user/my-prompts", icon: FaList },
-    { label: "Saved Prompts", href: "/dashboard/user/saved-prompts", icon: FaBookmark },
+    // { label: "My Prompts", href: "/dashboard/user/my-prompts", icon: FaList },
+    // { label: "Saved Prompts", href: "/dashboard/user/saved-prompts", icon: FaBookmark },
     { label: "My Reviews", href: "/dashboard/user/my-reviews", icon: FaStar },
     { label: "Profile", href: "/dashboard/user/profile", icon: FaUser },
   ],
@@ -67,7 +67,7 @@ const DashboardSidebar = ({
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:relative z-50 h-full bg-gray-800 text-white 
+          fixed lg:relative z-50 h-full bg-slate-800 text-white 
           flex flex-col transition-all duration-300 ease-in-out
           ${isOpen ? 'w-64' : 'w-20'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}

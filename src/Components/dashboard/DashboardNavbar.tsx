@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { FaSearch, FaBell, FaUserCircle, FaChevronDown } from "react-icons/fa";
 import { Avatar } from "../ui/Avatar";
 import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
 
 interface DashboardNavbarProps {
   toggleSidebar: () => void;
@@ -110,18 +111,17 @@ const DashboardNavbar = ({
 
                 {/* Menu Options */}
                 <div className="py-1">
-                  <button
-                    onClick={() => setIsProfileOpen(false)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm text-gray-700 flex items-center gap-2 cursor-pointer"
-                  >
-                    👤 Profile
-                  </button>
-                  <button
+                 <Link href="/dashboard/user/profile">
+                   <button className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm text-gray-700 flex items-center gap-2 cursor-pointer">
+                     👤 Profile
+                   </button>
+                 </Link>
+                  {/* <button
                     onClick={() => setIsProfileOpen(false)}
                     className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm text-gray-700 flex items-center gap-2 cursor-pointer"
                   >
                     ⚙️ Settings
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Logout Option */}
