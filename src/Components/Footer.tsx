@@ -1,74 +1,101 @@
+
 "use client";
 
 import Link from "next/link";
-import { FaYoutube } from "react-icons/fa";
-import { FiFacebook, FiGlobe, FiMail } from "react-icons/fi";
+import { FaYoutube, FaFacebookF, FaInstagram, FaUtensils } from "react-icons/fa";
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#322723] text-gray-300 px-6 lg:px-16 pt-16 pb-8 border-t border-stone-800">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-stone-800">
+    <footer className="w-full bg-slate-900 text-gray-300 border-t border-slate-800">
+      {/* Top Section */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
         
-        {/* Brand Column (4 Columns) */}
+        {/* Brand Info (4 Columns) */}
         <div className="lg:col-span-4 space-y-4">
-          <h3 className="text-lg font-bold text-white tracking-wide">Dineflow</h3>
-          <p className="text-xs md:text-sm text-stone-400 max-w-xs leading-relaxed">
-            Elevating the standard of digital dining through culinary precision and Michelin-star passion.
+          <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-white">
+            <span className="p-2 bg-orange-600 rounded-xl text-white text-lg">
+              <FaUtensils />
+            </span>
+            <span>Dine<span className="text-orange-500">Flow</span></span>
+          </Link>
+          <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
+            Elevating your dining experience. Connecting food lovers with top-rated restaurants, delivering freshness right to your doorstep.
           </p>
-          {/* Social Icons matching image */}
+          
+          {/* Social Icons */}
           <div className="flex items-center gap-3 pt-2">
-
-             <a href="#" className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-700 transition-all">
-              <FiFacebook className="w-4 h-4" />
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-slate-800 hover:bg-orange-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200"
+              aria-label="Facebook"
+            >
+              <FaFacebookF className="w-4 h-4" />
             </a>
-
-            <a href="#" className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-700 transition-all">
-              <FiGlobe className="w-4 h-4" />
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-slate-800 hover:bg-orange-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200"
+              aria-label="Instagram"
+            >
+              <FaInstagram className="w-4 h-4" />
             </a>
-            <a href="#" className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-700 transition-all">
-              <FiMail className="w-4 h-4" />
-            </a>
-
-             <a href="#" className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-700 transition-all">
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-slate-800 hover:bg-orange-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200"
+              aria-label="YouTube"
+            >
               <FaYoutube className="w-4 h-4" />
             </a>
           </div>
         </div>
 
-        {/* Explore Column (2 Columns) */}
+        {/* Quick Links (2 Columns) */}
         <div className="lg:col-span-2 space-y-4">
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Explore</h4>
-          <ul className="space-y-2.5 text-xs md:text-sm text-stone-400">
-            <li><Link href="#" className="hover:text-white transition-colors">Tasting Menus</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Wine Cellar</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Chef's Table</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Gift Cards</Link></li>
+          <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Explore</h4>
+          <ul className="space-y-2.5 text-sm text-gray-400">
+            <li><Link href="/all-menu" className="hover:text-orange-500 transition-colors">Our Menu</Link></li>
+            <li><Link href="/restaurants" className="hover:text-orange-500 transition-colors">Restaurants</Link></li>
+            <li><Link href="/offers" className="hover:text-orange-500 transition-colors">Special Offers</Link></li>
+            <li><Link href="/reservation" className="hover:text-orange-500 transition-colors">Book a Table</Link></li>
           </ul>
         </div>
 
-        {/* Company Column (2 Columns) */}
+        {/* Company Links (2 Columns) */}
         <div className="lg:col-span-2 space-y-4">
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Company</h4>
-          <ul className="space-y-2.5 text-xs md:text-sm text-stone-400">
-            <li><Link href="#" className="hover:text-white transition-colors">Our Story</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Careers</Link></li>
-            <li className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-              <Link href="#" className="hover:text-white transition-colors">Sustainability</Link>
+          <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Company</h4>
+          <ul className="space-y-2.5 text-sm text-gray-400">
+            <li><Link href="/about" className="hover:text-orange-500 transition-colors">About Us</Link></li>
+            <li><Link href="/contact" className="hover:text-orange-500 transition-colors">Contact</Link></li>
+            <li><Link href="/careers" className="hover:text-orange-500 transition-colors">Careers</Link></li>
+            <li className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <Link href="/partner" className="hover:text-orange-500 transition-colors">Become Partner</Link>
             </li>
-            <li><Link href="#" className="hover:text-white transition-colors">Support</Link></li>
           </ul>
         </div>
 
-        {/* Contact Column (4 Columns) */}
+        {/* Contact Info (4 Columns) */}
         <div className="lg:col-span-4 space-y-4">
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Contact</h4>
-          <div className="space-y-3 text-xs md:text-sm text-stone-400 leading-relaxed">
-            <p>123 Gastronomy Avenue<br />Epicurean District, NY 10001</p>
-            <p className="pt-1">
-              <span className="block font-medium text-stone-300">+1 (555) MICHELIN</span>
-              <a href="mailto:concierge@culinamoderna.com" className="hover:text-white transition-colors underline underline-offset-4 decoration-stone-600">
-                concierge@culinamoderna.com
+          <h4 className="text-sm font-semibold text-white uppercase tracking-wider">Get in Touch</h4>
+          <div className="space-y-3 text-sm text-gray-400 leading-relaxed">
+            <p className="flex items-start gap-3">
+              <FiMapPin className="text-orange-500 text-lg shrink-0 mt-0.5" />
+              <span>Dhaka, Bangladesh</span>
+            </p>
+            <p className="flex items-center gap-3">
+              <FiPhone className="text-orange-500 text-lg shrink-0" />
+              <span>+880 1700-000000</span>
+            </p>
+            <p className="flex items-center gap-3">
+              <FiMail className="text-orange-500 text-lg shrink-0" />
+              <a href="mailto:support@dineflow.com" className="hover:text-orange-500 transition-colors">
+                support@dineflow.com
               </a>
             </p>
           </div>
@@ -76,13 +103,14 @@ export default function Footer() {
 
       </div>
 
-      {/* Bottom Bar: Copyright & Fine Print */}
-      <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] md:text-xs text-stone-500">
-        <p>&copy; 2026 Dineflow. Michelin-standard digital dining experience.</p>
-        <div className="flex items-center gap-6">
-          <Link href="#" className="hover:text-stone-400 transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-stone-400 transition-colors">Terms of Service</Link>
-          <Link href="#" className="hover:text-stone-400 transition-colors">Accessibility</Link>
+      {/* Bottom Bar */}
+      <div className="border-t border-slate-800 bg-slate-950/50 py-6">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+          <p>&copy; {new Date().getFullYear()} Dine Flow. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-gray-400 transition-colors">Terms of Service</Link>
+          </div>
         </div>
       </div>
     </footer>
