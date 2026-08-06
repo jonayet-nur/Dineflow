@@ -17,6 +17,8 @@
 import Hero from "@/Components/Banner";
 import BookingAndNews from "@/Components/BookingAndNews";
 import FeaturedItems from "@/Components/Featured";
+import { PromoComboBanner } from "@/Components/PromoComboBanner";
+import { PromoDiscountBanner } from "@/Components/PromoDicountBanner";
 import ReviewsSection from "@/Components/ReviewSection";
 
 import React from "react";
@@ -30,6 +32,8 @@ export default function Home(): React.ReactElement {
     React.createElement(Hero, null),
     React.createElement(FeaturedItems, null),
     React.createElement(ReviewsSection, null),
+    React.createElement(PromoDiscountBanner, null),
+    React.createElement(PromoComboBanner, null),
     React.createElement(BookingAndNews, null)
   );
 }
