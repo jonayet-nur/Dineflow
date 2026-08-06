@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FaSearch, FaBell, FaUserCircle, FaChevronDown } from "react-icons/fa";
 import { Avatar } from "../ui/Avatar";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface DashboardNavbarProps {
   toggleSidebar: () => void;
@@ -17,10 +19,25 @@ const DashboardNavbar = ({
   toggleMobileSidebar,
 }: DashboardNavbarProps): React.ReactElement => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const router = useRouter();
   // ১. সেশন থেকে ইউজার ডাটা তুলে আনা
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
+
+const handleSignOut = async () => {
+  setIsProfileOpen(false);
+
+  try {
+    await authClient.signOut();
+    toast.success("Successfully logged out!");
+    router.push("/login");
+  } catch{
+    toast.error("Failed to log out. Please try again.");
+    // console.error("Sign out error:", error);
+  }
+};
+  
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div className="flex items-center justify-between px-4 md:px-6 h-16">
@@ -127,7 +144,7 @@ const DashboardNavbar = ({
                 {/* Logout Option */}
                 <div className="border-t border-gray-100 py-1">
                   <button
-                    // onClick={handleLogout} // আপনার লগআউট ফাংশন
+                    onClick={handleSignOut} // logout function call
                     className="w-full text-left px-4 py-2.5 hover:bg-red-50 transition-colors text-sm text-red-600 flex items-center gap-2 cursor-pointer"
                   >
                     🚪 Logout

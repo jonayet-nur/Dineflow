@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   FaHome, 
   FaList, 
@@ -19,6 +19,7 @@ import { authClient } from '@/lib/auth-client';
 import { DashboardSidebarProps, NavItem, UserRole } from '@/types/next-auth';
 import { FiLogOut } from 'react-icons/fi';
 import { Logo } from '../ui/Logo';
+import toast from 'react-hot-toast';
 
 // রেন্ডার পারফরম্যান্স বাড়াতে নেভিগেশন কনফিগ কম্পোনেন্টের বাইরে রাখা ভালো
 const NAV_CONFIG: Record<UserRole, NavItem[]> = {
@@ -53,6 +54,19 @@ const DashboardSidebar = ({
   const currentNavItems = NAV_CONFIG[currentRole] || NAV_CONFIG.user;
 
   const isActive = (path: string) => pathname === path;
+  const router = useRouter();
+
+
+  const handleSignOut = async () => {
+  try {
+    await authClient.signOut();
+    toast.success("Successfully logged out!");
+    router.push("/login");
+  } catch (error) {
+    toast.error("Failed to log out. Please try again.");
+    console.error("Sign out error:", error);
+  }
+};
 
   return (
     <>
@@ -136,10 +150,10 @@ const DashboardSidebar = ({
         {/* Logout Section */}
         <div className="mt-auto p-4 border-t border-gray-800">
           <button
-            // onClick={handleLogout}
+            onClick={handleSignOut}
             className={`
               group flex items-center w-full px-3 py-2.5 rounded-xl
-              text-gray-400 hover:text-white hover:bg-gray-800/80
+              text-gray-400 hover:text-white bg-red-700 hover:bg-red-800
               transition-all duration-200
               ${!isOpen ? 'justify-center' : 'gap-3'}
             `}
