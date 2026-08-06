@@ -72,7 +72,7 @@ export default function Footer() {
           <ul className="space-y-2.5 text-sm text-gray-400">
             <li><Link href="/about" className="hover:text-orange-500 transition-colors">About Us</Link></li>
             <li><Link href="/contact" className="hover:text-orange-500 transition-colors">Contact</Link></li>
-            <li><Link href="/careers" className="hover:text-orange-500 transition-colors">Careers</Link></li>
+            <li><Link href="/blog" className="hover:text-orange-500 transition-colors">Blogs</Link></li>
             <li className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <Link href="/partner" className="hover:text-orange-500 transition-colors">Become Partner</Link>

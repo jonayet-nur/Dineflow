@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'i.ibb.co',
       },
+       {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   /* config options here */
@@ -36,3 +42,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+
