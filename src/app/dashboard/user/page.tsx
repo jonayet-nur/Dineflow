@@ -1,20 +1,10 @@
-// import React from 'react'
-
-// const UserMainPageDashboard = () => {
-//   return (
-//     <div>UserMainPage Dashboard</div>
-//   )
-// }
-
-// export default UserMainPageDashboard
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import { 
-  FiShoppingBag, FiHeart, FiDollarSign, FiClock, 
+  FiShoppingBag, FiDollarSign, FiClock, 
   FiArrowRight, FiEye, FiRefreshCw 
 } from 'react-icons/fi';
 import { FaUtensils } from 'react-icons/fa6';
@@ -24,7 +14,7 @@ import {
 } from 'recharts';
 import StatCard from '@/Components/ui/StatCardUserDash';
 
-// Flexible Order Interface
+// Order Interface
 interface Order {
   _id: string;
   email?: string;
@@ -61,32 +51,28 @@ export default function DynamicUserDashboard() {
 
   useEffect(() => { setIsMounted(true); }, []);
 
+  // Stats Calculation
+  const stat = useMemo(() => {
+    const totalOrders = orders.length;
+    const pendingOrders = orders.filter(o => (o.status || 'Pending').toLowerCase() === 'pending');
+    const pendingCount = pendingOrders.length;
+    
+    const pendingSpent = pendingOrders.reduce((sum, ord) => {
+      const val = parseFloat(String(ord.totalAmount || ord.totalPrice || ord.price || 0));
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
 
-  // 📊 Stats Calculation
-const stat = useMemo(() => {
-  const totalOrders = orders.length;
-  
-  // Pending Orders Filter
-  const pendingOrders = orders.filter(o => (o.status || 'Pending').toLowerCase() === 'pending');
-  const pendingCount = pendingOrders.length;
-  
-  // Pending Status wala orders er total amount
-  const pendingSpent = pendingOrders.reduce((sum, ord) => {
-    const val = parseFloat(String(ord.totalAmount || ord.totalPrice || ord.price || 0));
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
+    const activeOrders = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status || '')).length;
+    
+    const totalSpent = orders.reduce((sum, ord) => {
+      const val = parseFloat(String(ord.totalAmount || ord.totalPrice || ord.price || 0));
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
 
-  const activeOrders = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status || '')).length;
-  
-  const totalSpent = orders.reduce((sum, ord) => {
-    const val = parseFloat(String(ord.totalAmount || ord.totalPrice || ord.price || 0));
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
+    return { totalOrders, activeOrders, pendingCount, pendingSpent, totalSpent };
+  }, [orders]);
 
-  return { totalOrders, activeOrders, pendingCount, pendingSpent, totalSpent };
-}, [orders]);
-
-  // 📡 1. Dynamic Order Fetching with Flexible Matching
+  // Fetch orders
   const fetchUserOrders = useCallback(async (manualRefresh = false) => {
     if (manualRefresh) setIsSyncing(true);
     else setLoadingOrders(true);
@@ -94,18 +80,12 @@ const stat = useMemo(() => {
     try {
       const res = await fetch(`${API_URL}/api/orders`, { cache: 'no-store' });
       const result = await res.json();
-
       const rawData = Array.isArray(result) ? result : (result.data || []);
 
       if (Array.isArray(rawData)) {
         const filtered = rawData.filter((ord: Order) => {
           const ordEmail = (ord.email || ord.userEmail || '').toLowerCase().trim();
           const ordName = (ord.customerName || '').toLowerCase().trim();
-          
-          // Match strategy:
-          // 1. Direct Email Match
-          // 2. If email absent in order, match Customer Name with session user name or email prefix
-          const sessionPrefix = userEmail.split('@')[0]; // e.g. "tanjimnur30"
           const sessionNameLower = userName.toLowerCase();
 
           const isEmailMatch = ordEmail && userEmail && ordEmail === userEmail;
@@ -114,7 +94,6 @@ const stat = useMemo(() => {
           return isEmailMatch || isNameMatch;
         });
 
-        // Fallback: If no match found by user email/name filter, show loaded data so UI updates
         setOrders(filtered.length > 0 ? filtered : rawData);
       }
     } catch (err) {
@@ -125,7 +104,7 @@ const stat = useMemo(() => {
     }
   }, [userEmail, userName, API_URL]);
 
-  // 📡 2. Favorites Fetching
+  // Favorites
   const fetchFavoriteItems = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/all-menu?limit=3`, { cache: 'no-store' });
@@ -142,21 +121,7 @@ const stat = useMemo(() => {
     fetchFavoriteItems();
   }, [fetchUserOrders, fetchFavoriteItems]);
 
-  // 📊 Stats Calculation
-  const stats = useMemo(() => {
-    const totalOrders = orders.length;
-    const activeOrders = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status || '')).length;
-    const pendingCount = orders.filter(o => (o.status || 'Pending') === 'Pending').length;
-    
-    const totalSpent = orders.reduce((sum, ord) => {
-      const val = parseFloat(String(ord.totalAmount || ord.totalPrice || ord.price || 0));
-      return sum + (isNaN(val) ? 0 : val);
-    }, 0);
-
-    return { totalOrders, activeOrders, pendingCount, totalSpent };
-  }, [orders]);
-
-  // 📈 Dynamic Weekly Chart Data
+  // Dynamic Weekly Chart Data
   const weeklyData = useMemo(() => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const counts: Record<string, number> = { Sun: 0, Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0 };
@@ -173,7 +138,7 @@ const stat = useMemo(() => {
     }));
   }, [orders]);
 
-  // 📈 Monthly Spending Trend
+  // Monthly Spending Trend
   const monthlyData = useMemo(() => {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthMap: Record<string, number> = {};
@@ -204,12 +169,12 @@ const stat = useMemo(() => {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 font-sans text-slate-800 bg-slate-50/50 min-h-screen">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 font-sans text-slate-800 bg-slate-50/20 min-h-screen">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[22px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
-            User <span className="text-blue-600">Dashboard</span>
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            User <span className="text-orange-500">Dashboard</span>
           </h1>
           <p className="text-slate-500 text-xs md:text-sm font-medium mt-0.5">
             Welcome back, {userName}! Here’s an overview of your activity.
@@ -220,12 +185,12 @@ const stat = useMemo(() => {
           <button
             onClick={() => fetchUserOrders(true)}
             disabled={isSyncing}
-            className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-600 transition cursor-pointer"
+            className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-600 transition cursor-pointer shadow-2xs"
             title="Sync Data"
           >
             <FiRefreshCw className={`text-sm ${isSyncing ? 'animate-spin' : ''}`} />
           </button>
-          <Link href="/all-menu" className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+          <Link href="/all-menu" className="bg-slate-900 hover:bg-[#A03E0B] text-white font-bold text-xs px-5.5 py-3 rounded-xl transition flex items-center gap-2 cursor-pointer shadow-sm">
             <FaUtensils className="text-sm" /> <span>Browse Menu</span>
           </Link>
         </div>
@@ -233,32 +198,23 @@ const stat = useMemo(() => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Orders" value={stats.totalOrders} sub={`${stat.pendingCount} pending`} icon={<FiShoppingBag />} loading={loadingOrders} color="blue" />
-        {/* Pending Orders Card */}
-<StatCard 
-  title="Pending Status" 
-  value={`${stat.pendingCount} Orders`} 
-  sub="Status: Pending" 
-  icon={<FiClock />} 
-  loading={loadingOrders} 
-  color="rose" 
-/>
-        {/* <StatCard title="Favorites" value={favorites.length} sub="Saved items" icon={<FiHeart />} loading={false} color="rose" /> */}
-        <StatCard title="Total Spent" value={`৳${stats.totalSpent.toLocaleString('en-BD')}`} sub="Lifetime spending" icon={<FiDollarSign />} loading={loadingOrders} color="emerald" />
-        <StatCard title="Active Orders" value={stats.activeOrders} sub="Currently active" icon={<FiClock />} loading={loadingOrders} color="purple" />
+        <StatCard title="Total Orders" value={stat.totalOrders} sub={`${stat.pendingCount} pending`} icon={<FiShoppingBag />} loading={loadingOrders} color="blue" />
+        <StatCard title="Pending Status" value={`${stat.pendingCount} Orders`} sub="Status: Pending" icon={<FiClock />} loading={loadingOrders} color="rose" />
+        <StatCard title="Total Spent" value={`৳${stat.totalSpent.toLocaleString('en-BD')}`} sub="Lifetime spending" icon={<FiDollarSign />} loading={loadingOrders} color="emerald" />
+        <StatCard title="Active Orders" value={stat.activeOrders} sub="Currently active" icon={<FiClock />} loading={loadingOrders} color="purple" />
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4">
+        <div className="bg-white border border-slate-100 rounded-[22px] p-6 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm font-black text-slate-900">Weekly Orders</h3>
+              <h3 className="text-sm font-bold text-slate-900">Weekly Orders</h3>
               <p className="text-xs text-slate-400 font-medium">Last 7 days activity</p>
             </div>
             <div className="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold text-slate-600">
               {(['Bar', 'Area', 'Line'] as const).map(type => (
-                <button key={type} onClick={() => setChartType(type)} className={`px-2.5 py-1 rounded-md ${chartType === type ? 'bg-blue-600 text-white' : ''}`}>
+                <button key={type} onClick={() => setChartType(type)} className={`px-2.5 py-1 rounded-md cursor-pointer transition ${chartType === type ? 'bg-orange-600 text-white shadow-sm' : ''}`}>
                   {type}
                 </button>
               ))}
@@ -270,26 +226,32 @@ const stat = useMemo(() => {
                 {chartType === 'Bar' ? (
                   <BarChart data={weeklyData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} allowDecimals={false} />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} allowDecimals={false} />
                     <Tooltip />
-                    <Bar dataKey="bookings" fill="#10B981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="bookings" fill="#ea580c" radius={[4, 4, 0, 0]} name="Orders" />
                   </BarChart>
                 ) : chartType === 'Area' ? (
                   <AreaChart data={weeklyData}>
+                    <defs>
+                      <linearGradient id="userWeeklyGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#f97316" stopOpacity={0.0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} allowDecimals={false} />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} allowDecimals={false} />
                     <Tooltip />
-                    <Area type="monotone" dataKey="bookings" stroke="#10B981" fill="#D1FAE5" />
+                    <Area type="monotone" dataKey="bookings" stroke="#ea580c" strokeWidth={2} fillOpacity={1} fill="url(#userWeeklyGrad)" name="Orders" />
                   </AreaChart>
                 ) : (
                   <LineChart data={weeklyData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} allowDecimals={false} />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} allowDecimals={false} />
                     <Tooltip />
-                    <Line type="monotone" dataKey="bookings" stroke="#10B981" strokeWidth={2} dot={{ fill: '#10B981' }} />
+                    <Line type="monotone" dataKey="bookings" stroke="#ea580c" strokeWidth={2} dot={{ fill: '#ea580c' }} name="Orders" />
                   </LineChart>
                 )}
               </ResponsiveContainer>
@@ -297,21 +259,21 @@ const stat = useMemo(() => {
           </div>
         </div>
 
-        {/* Monthly Trend Chart */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4">
+        {/* Monthly Spendings */}
+        <div className="bg-white border border-slate-100 rounded-[22px] p-6 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
           <div>
-            <h3 className="text-sm font-black text-slate-900">Monthly Trend</h3>
-            <p className="text-xs text-slate-400 font-medium">Last 6 months spending</p>
+            <h3 className="text-sm font-bold text-slate-900">Monthly Spending</h3>
+            <p className="text-xs text-slate-400 font-medium">Last 6 months spending trend</p>
           </div>
           <div className="h-48 w-full pt-2">
             {isMounted && (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                  <Tooltip formatter={(val: any) => [`৳${val}`, 'Spent']} />
-                  <Line type="monotone" dataKey="value" stroke="#10B981" strokeWidth={2} dot={{ fill: '#10B981' }} />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 600 }} />
+                  <Tooltip formatter={(val: any) => [`৳${val.toLocaleString()}`, 'Spent']} />
+                  <Line type="monotone" dataKey="value" stroke="#ea580c" strokeWidth={2.5} dot={{ fill: '#ea580c' }} name="Spent" />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -319,25 +281,25 @@ const stat = useMemo(() => {
         </div>
       </div>
 
-      {/* My Bookings Table */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4">
+      {/* Bookings Table */}
+      <div className="bg-white border border-slate-100 rounded-[22px] p-6 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-sm font-black text-slate-900">My Bookings</h3>
+            <h3 className="text-sm font-bold text-slate-900">My Bookings</h3>
             <p className="text-xs text-slate-400 font-medium">View and manage your order history</p>
           </div>
-          <Link href="/all-menu" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+          <Link href="/all-menu" className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
             <span>Browse more</span> <FiArrowRight className="text-xs" />
           </Link>
         </div>
 
         <div className="overflow-x-auto">
           {loadingOrders ? (
-            <div className="py-8 text-center text-xs text-slate-400">Loading orders data...</div>
+            <div className="py-8 text-center text-xs text-slate-400 font-medium">Loading orders data...</div>
           ) : orders.length > 0 ? (
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px]">
+                <tr className="border-b border-slate-100 text-slate-450 font-bold uppercase text-[10px] tracking-wider">
                   <th className="py-3 px-2">CUSTOMER / ITEM</th>
                   <th className="py-3 px-2">DATE</th>
                   <th className="py-3 px-2">AMOUNT</th>
@@ -345,28 +307,28 @@ const stat = useMemo(() => {
                   <th className="py-3 px-2 text-right">ACTIONS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50 font-medium text-slate-700">
+              <tbody className="divide-y divide-slate-50 font-semibold text-slate-650">
                 {orders.map((ord) => (
-                  <tr key={ord._id}>
-                    <td className="py-3 px-2 font-bold text-slate-900">
+                  <tr key={ord._id} className="hover:bg-slate-50/30 transition-colors duration-150">
+                    <td className="py-3.5 px-2 font-bold text-slate-900">
                       {ord.customerName || formatFoodItems(ord.items)}
                     </td>
-                    <td className="py-3 px-2 text-slate-500">
+                    <td className="py-3.5 px-2 text-slate-400">
                       {ord.createdAt ? new Date(ord.createdAt).toLocaleDateString() : 'Recent'}
                     </td>
-                    <td className="py-3 px-2 font-bold text-slate-900">
+                    <td className="py-3.5 px-2 font-black text-slate-900">
                       ৳{ord.totalAmount || ord.totalPrice || ord.price || 0}
                     </td>
-                    <td className="py-3 px-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        ord.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600' : 
-                        ord.status === 'Cancelled' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+                    <td className="py-3.5 px-2">
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${
+                        ord.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                        ord.status === 'Cancelled' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-amber-50 text-amber-600 border-amber-100'
                       }`}>
                         {ord.status || 'Pending'}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-right">
-                      <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition">
+                    <td className="py-3.5 px-2 text-right">
+                      <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-450 hover:text-slate-800 transition cursor-pointer">
                         <FiEye className="text-sm" />
                       </button>
                     </td>

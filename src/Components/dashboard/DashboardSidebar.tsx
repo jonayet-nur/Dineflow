@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -7,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   FaHome, 
   FaList, 
-  FaBookmark, 
   FaStar, 
   FaUser, 
   FaUsers, 
@@ -21,12 +19,9 @@ import { FiLogOut } from 'react-icons/fi';
 import { Logo } from '../ui/Logo';
 import toast from 'react-hot-toast';
 
-// রেন্ডার পারফরম্যান্স বাড়াতে নেভিগেশন কনফিগ কম্পোনেন্টের বাইরে রাখা ভালো
 const NAV_CONFIG: Record<UserRole, NavItem[]> = {
   user: [
     { label: "Dashboard", href: "/dashboard/user", icon: FaHome },
-    // { label: "My Prompts", href: "/dashboard/user/my-prompts", icon: FaList },
-    // { label: "Saved Prompts", href: "/dashboard/user/saved-prompts", icon: FaBookmark },
     { label: "My Reviews", href: "/dashboard/user/my-reviews", icon: FaStar },
     { label: "Profile", href: "/dashboard/user/profile", icon: FaUser },
   ],
@@ -49,31 +44,29 @@ const DashboardSidebar = ({
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
   
-  // সেশন থেকে রোল নিন, না থাকলে ফলব্যাক রোল (user) ব্যবহার করুন
   const currentRole = (session?.user as { role?: UserRole })?.role || fallbackRole;
   const currentNavItems = NAV_CONFIG[currentRole] || NAV_CONFIG.user;
 
   const isActive = (path: string) => pathname === path;
   const router = useRouter();
 
-
   const handleSignOut = async () => {
-  try {
-    await authClient.signOut();
-    toast.success("Successfully logged out!");
-    router.push("/login");
-  } catch (error) {
-    toast.error("Failed to log out. Please try again.");
-    console.error("Sign out error:", error);
-  }
-};
+    try {
+      await authClient.signOut();
+      toast.success("Successfully logged out!");
+      router.push("/login");
+    } catch (error) {
+      toast.error("Failed to log out. Please try again.");
+      console.error("Sign out error:", error);
+    }
+  };
 
   return (
     <>
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs"
           onClick={toggleMobile}
         />
       )}
@@ -81,15 +74,15 @@ const DashboardSidebar = ({
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:relative z-50 h-full bg-slate-800 text-white 
-          flex flex-col transition-all duration-300 ease-in-out
+          fixed lg:relative z-50 h-full bg-[#0B0F17] text-white 
+          flex flex-col transition-all duration-300 ease-in-out border-r border-white/5
           ${isOpen ? 'w-64' : 'w-20'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Header / Logo Section */}
         <div className={`
-          flex items-center h-16 px-4 border-b border-gray-800
+          flex items-center h-16 px-4 border-b border-white/5
           ${isOpen ? 'justify-between' : 'justify-center'}
         `}>
           {isOpen ? (
@@ -98,8 +91,8 @@ const DashboardSidebar = ({
             </div>
           ) : (
             <Link href="/" className="flex items-center justify-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-500 transition">
-                <span className="text-white font-black text-xl">D</span>
+              <div className="w-10 h-10 bg-slate-900 border border-white/10 rounded-xl flex items-center justify-center shadow-md hover:bg-slate-800 transition">
+                <span className="text-orange-500 font-black text-xl">D</span>
               </div>
             </Link>
           )}
@@ -108,7 +101,7 @@ const DashboardSidebar = ({
           {isMobileOpen && (
             <button
               onClick={toggleMobile}
-              className="lg:hidden p-1.5 rounded-xl hover:bg-gray-800 text-gray-400 hover:text-white transition"
+              className="lg:hidden p-1.5 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition cursor-pointer"
               aria-label="Close menu"
             >
               <span className="text-xl font-bold">✕</span>
@@ -117,7 +110,7 @@ const DashboardSidebar = ({
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+        <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1.5 custom-scrollbar">
           {currentNavItems.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -127,18 +120,18 @@ const DashboardSidebar = ({
                 key={item.href}
                 href={item.href}
                 className={`
-                  flex items-center px-3 py-2.5 rounded-xl transition-all duration-200
+                  flex items-center px-3.5 py-3 rounded-xl transition-all duration-250 font-semibold text-sm cursor-pointer
                   ${active 
-                    ? 'bg-blue-600 text-white shadow-lg' 
-                    : 'text-gray-300 hover:bg-gray-800/80 hover:text-white'
+                    ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20 shadow-sm' 
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
                   }
                   ${!isOpen && 'justify-center'}
                 `}
                 title={!isOpen ? item.label : ''}
               >
-                <Icon className="text-xl flex-shrink-0" />
+                <Icon className={`text-lg flex-shrink-0 ${active ? 'text-orange-400' : 'text-slate-400'}`} />
                 {isOpen && (
-                  <span className="ml-3 text-sm font-medium whitespace-nowrap">
+                  <span className="ml-3 whitespace-nowrap">
                     {item.label}
                   </span>
                 )}
@@ -148,13 +141,13 @@ const DashboardSidebar = ({
         </nav>
 
         {/* Logout Section */}
-        <div className="mt-auto p-4 border-t border-gray-800">
+        <div className="mt-auto p-4 border-t border-white/5">
           <button
             onClick={handleSignOut}
             className={`
-              group flex items-center w-full px-3 py-2.5 rounded-xl
-              text-gray-400 hover:text-white bg-red-700 hover:bg-red-800
-              transition-all duration-200
+              group flex items-center w-full px-3.5 py-3 rounded-xl
+              text-rose-400 bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/20
+              transition-all duration-200 cursor-pointer
               ${!isOpen ? 'justify-center' : 'gap-3'}
             `}
             aria-label="Logout"
@@ -167,7 +160,7 @@ const DashboardSidebar = ({
               `} 
             />
             {isOpen && (
-              <span className="text-sm font-medium transition-all duration-200 group-hover:translate-x-0.5">
+              <span className="text-sm font-bold transition-all duration-200">
                 Logout
               </span>
             )}
