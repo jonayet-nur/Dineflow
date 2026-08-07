@@ -13,7 +13,7 @@ const parentVariants = {
     scale: 1,
     transition: {
       duration: 0.8,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
       staggerChildren: 0.15,
       delayChildren: 0.1,
     },
@@ -25,7 +25,7 @@ const leftVariants = {
   show: { 
     opacity: 1, 
     x: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
   },
 };
 
@@ -35,7 +35,7 @@ const rightVariants = {
     opacity: 1, 
     x: 0,
     scale: 1,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
   },
 };
 
